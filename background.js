@@ -1,3 +1,6 @@
+// Load API key from config
+importScripts('config.js');
+
 console.log("Spiker has been Spiked! 🚀");
 
 async function captureWebpage() {
@@ -17,6 +20,10 @@ async function captureWebpage() {
 async function analyzeVibeWithGemini(base64Image) {
     // Safety Net 1: Did the picture even take?
     if (!base64Image) {
+        return {
+            ok: false,
+            text: "Error: Could not take screenshot. You cannot use this extension on Chrome/Edge settings pages or New Tab pages. Please go to a normal website!"
+        };
         return {
             ok: false,
             text: "Error: Could not take screenshot. You cannot use this extension on Chrome/Edge settings pages or New Tab pages. Please go to a normal website!"
@@ -102,6 +109,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             sendResponse({ 
                 status: finalSuccess ? "success" : "error", 
                 imageBase64: imageResult,
+                description: aiResult.text,
+                aiOk: aiResult.ok,
+                modelUsed: aiResult.model || null
                 description: aiResult.text,
                 aiOk: aiResult.ok,
                 modelUsed: aiResult.model || null

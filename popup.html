@@ -14,9 +14,25 @@
     <div class="header">
       <div class="header-left">
         <div class="logo-circle">
-          <svg viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" />
+          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background -->
+            <rect width="48" height="48" rx="12" fill="#014140"/>
+            <!-- Outer eye shape -->
+            <path d="M8 24c0 0 7-12 16-12s16 12 16 12-7 12-16 12S8 24 8 24z" 
+                  fill="none" stroke="#F0F7F4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Iris -->
+            <circle cx="24" cy="24" r="6.5" fill="none" stroke="#F0F7F4" stroke-width="2"/>
+            <!-- Pupil -->
+            <circle cx="24" cy="24" r="3" fill="#F0F7F4"/>
+            <!-- Glow effect on pupil -->
+            <circle cx="22.5" cy="22.5" r="1" fill="#014140" opacity="0.6"/>
+            <!-- Sound wave accents -->
+            <path d="M24 14.5 L24 12" stroke="#F0F7F4" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
+            <path d="M24 36 L24 33.5" stroke="#F0F7F4" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
+            <path d="M31.5 16.5 L33 15" stroke="#F0F7F4" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+            <path d="M15 33 L16.5 31.5" stroke="#F0F7F4" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+            <path d="M33 33 L31.5 31.5" stroke="#F0F7F4" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+            <path d="M16.5 16.5 L15 15" stroke="#F0F7F4" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
           </svg>
         </div>
         <span class="app-name">RESONANCE</span>
