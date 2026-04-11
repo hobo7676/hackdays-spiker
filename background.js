@@ -24,67 +24,66 @@ async function analyzeVibeWithGemini(base64Image) {
             ok: false,
             text: "Error: Could not take screenshot. You cannot use this extension on Chrome/Edge settings pages or New Tab pages. Please go to a normal website!"
         };
+        return {
+            ok: false,
+            text: "Error: Could not take screenshot. You cannot use this extension on Chrome/Edge settings pages or New Tab pages. Please go to a normal website!"
+        };
     }
 
-    // API key loaded from config.js / .env
-    const apiKey = CONFIG.GEMINI_API_KEY;
+    // 🚨 PASTE YOUR NEW KEY HERE 🚨
+    const apiKey = "AIzaSyCn6mgVfJa2U-s8CNW0_KeCIe-NdjgodAo"; 
+    const cleanBase64 = base64Image.split(',')[1];
+    const modelsToTry = [
+        "gemini-2.0-flash",
+        "gemini-1.5-flash",
+        "gemini-1.5-flash-8b"
+    ];
     
-    const url = "https://api.groq.com/openai/v1/chat/completions";
-    
-    // Groq vision expects the full data URI (data:image/jpeg;base64,...)
-    const imageDataUrl = base64Image.startsWith("data:") 
-        ? base64Image 
-        : `data:image/jpeg;base64,${base64Image}`;
-    
+    // Make sure this isn't empty!
     const systemPrompt = "You are an expert accessibility assistant. Describe the visual aesthetic, layout, and main subject of this webpage interface in 2 short, conversational sentences for a visually impaired user. Be concise, warm, and helpful.";
 
     const requestBody = {
-        model: "meta-llama/llama-4-scout-17b-16e-instruct",
-        messages: [
-            { role: "system", content: systemPrompt },
-            {
-                role: "user",
-                content: [
-                    { type: "text", text: "Analyze this webpage screenshot:" },
-                    {
-                        type: "image_url",
-                        image_url: { url: imageDataUrl }
-                    }
-                ]
-            }
-        ],
-        max_tokens: 300
+        contents: [{
+            parts: [
+                { text: systemPrompt },
+                { inline_data: { mime_type: "image/jpeg", data: cleanBase64 } }
+            ]
+        }]
     };
 
-    try {
-        console.log("Sending picture to Gemini API... 🧠");
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
-            },
-            body: JSON.stringify(requestBody)
-        });
+    let lastErrorMessage = "Unknown Gemini API error.";
 
-        const data = await response.json();
-        
-        // Safety Net 2: Did the API reject the key or prompt?
-        if (!response.ok) {
-            console.error("❌ API REJECTED IT! Reason:", data);
+    for (const model of modelsToTry) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+        try {
+            console.log(`Sending picture to Gemini API with ${model}... 🧠`);
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestBody)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                lastErrorMessage = data.error?.message || `HTTP ${response.status}`;
+                console.error(`❌ Model ${model} failed:`, data);
+                continue;
+            }
+
+            const vibeDescription = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!vibeDescription) {
+                lastErrorMessage = "No text returned by Gemini.";
+                continue;
+            }
+
+            console.log("Gemini says: ", vibeDescription);
             return {
-                ok: false,
-                text: `API Error: ${data.error?.message || "Check the background console."}`
+                ok: true,
+                text: vibeDescription,
+                model
             };
-        }
-
-        const vibeDescription = data.choices[0].message.content;
-        console.log("Gemini says: ", vibeDescription);
-        return {
-            ok: true,
-            text: vibeDescription,
-            model: data.model
-        };
 
     } catch (error) {
         console.error("Gemini API Error :", error);
@@ -101,10 +100,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         captureWebpage().then(async (imageResult) => {
             const aiResult = await analyzeVibeWithGemini(imageResult);
+            const captureOk = Boolean(imageResult);
+            const finalSuccess = captureOk && aiResult.ok;
             
             sendResponse({ 
-                status: aiResult.ok ? "success" : "error", 
+                status: finalSuccess ? "success" : "error", 
                 imageBase64: imageResult,
+                description: aiResult.text,
+                aiOk: aiResult.ok,
+                modelUsed: aiResult.model || null
                 description: aiResult.text,
                 aiOk: aiResult.ok,
                 modelUsed: aiResult.model || null
