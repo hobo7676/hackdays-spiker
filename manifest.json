@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3, 
+  "name": "Project Resonance by Spiker",
+  "version": "1.0",
+  "description": "Reads the visual vibe of a webpage using AI.",
+  "permissions": [
+    "activeTab",
+    "tts"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Read the Vibe"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "Command+Shift+F"
+      },
+      "description": "Trigger the Resonance Vibe Check"
+    }
+  }
+}
