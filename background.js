@@ -14,7 +14,7 @@ async function captureWebpage() {
 }
 
 async function analyzeVibeWithGemini(base64Image) {
-    const apiKey = "YOUR_API_KEY_HERE"; 
+    const apiKey = "AIzaSyCn6mgVfJa2U-s8CNW0_KeCIe-NdjgodAo"; 
     
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
     const cleanBase64 = base64Image.split(',')[1];
