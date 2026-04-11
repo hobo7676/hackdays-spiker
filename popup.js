@@ -1,38 +1,36 @@
-document.addEventListener('DOMContentLoaded' , () => {
-    const analyzeBtn = document.getElementById('analyzeBtn')
-    const spinner = document.getElementById('analyzeSpinner')
-    const statusArea = document.getElementById('statusArea')
-    const statusText = document.getElementById('statusText')
+document.addEventListener('DOMContentLoaded', () => {
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const spinner = document.getElementById('analyzeSpinner');
+    const statusArea = document.getElementById('statusArea');
+    const statusText = document.getElementById('statusText');
+    const descriptionBox = document.getElementById('descriptionBox');
+    const descriptionText = document.getElementById('descriptionText');
 
-    
     analyzeBtn.addEventListener('click', () => {
         spinner.classList.remove('hidden'); 
         statusArea.classList.remove('hidden');
         statusArea.className = 'status-area status-loading'; 
-        statusText.innerText = "Capturing screen..."; 
+        statusText.innerText = "Capturing screen and analyzing vibe..."; 
 
-    
-    chrome.runtime.sendMessage({ action: "capture_vibe" }, (response) => {
-            
-        spinner.classList.add('hidden');
+        chrome.runtime.sendMessage({ action: "capture_vibe" }, (response) => {
+            spinner.classList.add('hidden');
 
-        if (chrome.runtime.lastError || !response) {
-            statusArea.className = 'status-area status-error';
-            statusText.innerText = "Error: Could not wake up the background engine.";
-            console.error("Messaging Error:", chrome.runtime.lastError);
-            return;
-        }
+            if (chrome.runtime.lastError || !response) {
+                statusArea.className = 'status-area status-error';
+                statusText.innerText = "Error: Could not wake up the background engine.";
+                return;
+            }
 
-        if (response.status === "success") {
-            statusArea.className = 'status-area status-done';
-            statusText.innerText = "Image captured successfully!";
+            if (response.status === "success") {
+                statusArea.className = 'status-area status-done';
+                statusText.innerText = "Analysis complete!";
                 
-
-            console.log("Victory! Base64 received in popup: ", response.imageBase64.substring(0, 50) + "...");
-        } else {
-            statusArea.className = 'status-area status-error';
-            statusText.innerText = "Failed to capture the webpage.";
-        }
+                descriptionBox.classList.remove('hidden');
+                descriptionText.innerText = response.description;
+            } else {
+                statusArea.className = 'status-area status-error';
+                statusText.innerText = "Failed to capture the webpage.";
+            }
+        });
     });
-})
 });
