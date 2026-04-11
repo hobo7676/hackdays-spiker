@@ -5,7 +5,8 @@
   "description": "Reads the visual vibe of a webpage using AI.",
   "permissions": [
     "activeTab",
-    "tts"
+    "tts",
+    "storage"
   ],
   "background": {
     "service_worker": "background.js"
