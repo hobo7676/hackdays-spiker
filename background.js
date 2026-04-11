@@ -87,7 +87,7 @@ async function analyzeVibeWithGemini(base64Image) {
         };
 
     } catch (error) {
-        console.error("Gemini API Error ❌:", error);
+        console.error("Gemini API Error :", error);
         return {
             ok: false,
             text: "Sorry, a critical error occurred while contacting the AI."
