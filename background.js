@@ -9,16 +9,24 @@ async function captureWebpage() {
         console.log("Image Capturation Succesful! 📸");
         return imageCaptured;
     } catch (error) {
-        console.error("Web Capture was Unsuccessful due to: ", error);
+        console.error("Web Capture Failed (Are you on a settings page?): ", error);
+        return null; // Return null so our AI knows the picture failed!
     }
 }
 
 async function analyzeVibeWithGemini(base64Image) {
+    // Safety Net 1: Did the picture even take?
+    if (!base64Image) {
+        return "Error: Could not take screenshot. You cannot use this extension on Chrome/Edge settings pages or New Tab pages. Please go to a normal website!";
+    }
+
+    // 🚨 PASTE YOUR NEW KEY HERE 🚨
     const apiKey = "YOUR_API_KEY_HERE"; 
     
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
     const cleanBase64 = base64Image.split(',')[1];
     
+    // Make sure this isn't empty!
     const systemPrompt = "You are an expert accessibility assistant. Describe the visual aesthetic, layout, and main subject of this webpage interface in 2 short, conversational sentences for a visually impaired user. Be concise, warm, and helpful.";
 
     const requestBody = {
@@ -39,14 +47,20 @@ async function analyzeVibeWithGemini(base64Image) {
         });
 
         const data = await response.json();
-        const vibeDescription = data.candidates[0].content.parts[0].text;
         
+        // Safety Net 2: Did Google reject the API key or prompt?
+        if (!response.ok) {
+            console.error("❌ GOOGLE REJECTED IT! Reason:", data);
+            return `API Error: ${data.error?.message || "Check the background console."}`;
+        }
+
+        const vibeDescription = data.candidates[0].content.parts[0].text;
         console.log("Gemini says: ", vibeDescription);
         return vibeDescription;
 
     } catch (error) {
         console.error("Gemini API Error ❌:", error);
-        return "Sorry, I am having trouble reading the screen right now.";
+        return "Sorry, a critical error occurred while contacting the AI.";
     }
 }
 
@@ -58,7 +72,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             const aiText = await analyzeVibeWithGemini(imageResult);
             
             sendResponse({ 
-                status: "success", 
+                status: imageResult ? "success" : "error", 
                 imageBase64: imageResult,
                 description: aiText 
             });
