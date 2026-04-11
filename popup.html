@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Takde longe</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+
+<body>
+
+  <div class="card">
+
+    <div class="header">
+      <div class="header-left">
+        <div class="logo-circle">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z" />
+          </svg>
+        </div>
+        <span class="app-name">ANNDHE LOG</span>
+        <span class="badge-active">Active</span>
+      </div>
+      <div class="header-icons">
+        <svg viewBox="0 0 24 24" title="Settings">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+      </div>
+    </div>
+
+    <p class="section-label">Listening &amp; Analysis</p>
+    <div class="analyze-btn-wrap">
+      <button class="analyze-btn" id="analyzeBtn" aria-label="Analyze Current Image">
+        <div class="analyze-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M2 12h2M6 8h2M6 16h2M10 5v14M14 8h-2M14 18h-2M18 6h-2M18 18h-2M22 12h-2" />
+          </svg>
+        </div>
+        <div class="analyze-pill-right">
+          <div class="analyze-pill-text">
+            <span class="analyze-label" id="analyzeLabel">Analyze Image</span>
+            <span class="analyze-sublabel">Alt + V to trigger</span>
+          </div>
+          <div class="analyze-chevron">
+            <svg viewBox="0 0 24 24">
+              <polyline points="18 15 12 9 6 15" />
+            </svg>
+            <svg viewBox="0 0 24 24">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </div>
+        </div>
+        <div class="spinner hidden" id="analyzeSpinner" style="position:absolute;right:20px;"></div>
+      </button>
+    </div>
+
+    <div class="status-area hidden" id="statusArea" role="status" aria-live="polite">
+      <span id="statusText"></span>
+    </div>
+
+    <div class="description-box hidden" id="descriptionBox">
+      <div class="description-header">
+        <span class="description-title">Description</span>
+        <button class="stop-btn" id="stopBtn" aria-label="Stop speaking">⏹ Stop</button>
+      </div>
+      <p class="description-text" id="descriptionText"></p>
+    </div>
+
+    <p class="section-label">Detail Level</p>
+    <div class="detail-grid">
+      <div class="detail-card active" id="quickCard" role="button" tabindex="0" aria-pressed="true">
+        <div class="detail-card-header">
+          <svg viewBox="0 0 24 24">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+          <span class="detail-title">Quick</span>
+        </div>
+        <span class="detail-sub">Short &amp; vibe-focused</span>
+      </div>
+      <div class="detail-card" id="detailedCard" role="button" tabindex="0" aria-pressed="false">
+        <div class="detail-card-header">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" />
+          </svg>
+          <span class="detail-title">Detailed</span>
+        </div>
+        <span class="detail-sub">Full context &amp; meaning</span>
+      </div>
+    </div>
+
+    <p class="section-label">Voice Settings</p>
+    <div class="speed-row">
+      <span class="speed-label">Speed</span>
+      <span class="speed-value" id="speedOut">1.0x</span>
+    </div>
+    <input type="range" id="speedSlider" min="0.5" max="2" step="0.1" value="1.0" aria-label="Speech speed" />
+
+    <div class="voice-select-wrap">
+      <div class="voice-left">
+        <svg viewBox="0 0 24 24">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+        </svg>
+        <select id="voiceSelect" aria-label="Select voice">
+          <option value="default">Warm Natural Voice</option>
+        </select>
+      </div>
+      <svg class="chevron-icon" viewBox="0 0 24 24">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </div>
+
+    <p class="section-label">Keyboard Shortcuts</p>
+    <div class="shortcuts-box" aria-label="Keyboard shortcuts">
+      <div class="shortcut-row">
+        <span class="key">Alt</span>
+        <span class="plus">+</span>
+        <span class="key">V</span>
+        <span class="shortcut-action">Analyze Image</span>
+      </div>
+      <div class="shortcut-row">
+        <span class="key">Alt</span>
+        <span class="plus">+</span>
+        <span class="key">R</span>
+        <span class="shortcut-action">Repeat Last</span>
+      </div>
+      <div class="shortcut-row">
+        <span class="key">Alt</span>
+        <span class="plus">+</span>
+        <span class="key">D</span>
+        <span class="shortcut-action">More Details</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+
+</body>
+
+</html>
